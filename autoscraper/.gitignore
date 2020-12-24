@@ -1,0 +1,4 @@
+*.zip
+reviews/*.json
+all_reviews.json
+node_modules/*
