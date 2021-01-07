@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization of Data</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="apexcharts.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            background: #f4f5f8;
+            font-size: 16px;
+            padding: 0 20px 20px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .col {
+            padding-right: 20px;
+            flex: 1;
+        }
+
+        .row .col:last-child {
+            padding-right: 0;
+        }
+
+        .card {
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.1);
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        .card-head svg {
+            margin-right: 10px;
+        }
+
+        .card-head .card-title {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .card.card-with-chart {
+            height: 100%;
+        }
+
+        span#total_reviews {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+        }
+
+        .styled-table {
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .styled-table thead tr {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: left;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+        }
+
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .styled-table tbody tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        }
+
+        .styled-table caption {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        @media screen and (max-width: 500px) {
+            .col {
+                padding-right: 0;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+    <h1 class="page-title">Sentiment Analysis on Smartphone Reviews</h1>
+    <div class="row">
+        <div class="card">
+            <div class="card-head">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calculator" width="42" height="42" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <rect x="4" y="3" width="16" height="18" rx="2" />
+                    <rect x="8" y="7" width="8" height="3" rx="1" />
+                    <line x1="8" y1="14" x2="8" y2="14.01" />
+                    <line x1="12" y1="14" x2="12" y2="14.01" />
+                    <line x1="16" y1="14" x2="16" y2="14.01" />
+                    <line x1="8" y1="17" x2="8" y2="17.01" />
+                    <line x1="12" y1="17" x2="12" y2="17.01" />
+                    <line x1="16" y1="17" x2="16" y2="17.01" />
+                </svg>
+                <p class="card-title">Total Reviews</p>
+            </div>
+            <span id="total_reviews"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="card card-with-chart">
+                <div class="card-head">
+                    <p class="card-title">Reviews per Rating</p>
+                </div>
+                <div class="card-chart">
+                    <div id="chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card card-with-chart">
+                <div class="card-head">
+                    <p class="card-title">Reviews per Rating</p>
+                </div>
+                <div class="card-chart">
+                    <div id="chart1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table id="table-stars" class="styled-table">
+                <caption># of reviews per rating</caption>
+                <thead></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+<script src="apexcharts.min.js"></script>
+<script>
+async function getStats(name) {
+    let response = await fetch('stats.json');
+    let data = await response.json()
+    return data;
+}
+
+window.addEventListener('load', async (event) => {
+    const colorPalette = ['#ff5c5f', '#ffa182', '#dcbd84', '#60d2b6', '#34a388'];
+    const stats = await getStats();
+    document.querySelector('#total_reviews').innerText = stats.total;
+    console.log(stats)
+    let per_rating = stats.per_rating;
+    const labels = [];
+    const series = [];
+    let table_body_str = `<tr>`;
+    let table_header_str = `<tr>`;
+    for (const [key, value] of Object.entries(per_rating)) {
+        labels.push(key + '-star');
+        series.push(value);
+        table_header_str += `<td>${key}-star</td>`;
+        table_body_str += `<td>${value}</td>`;
+    }
+    table_body_str += `</tr>`;
+    table_header_str += `</tr>`;
+    document.querySelector('#table-stars thead').innerHTML = table_header_str;
+    document.querySelector('#table-stars tbody').innerHTML = table_body_str;
+
+    var chart = new ApexCharts(document.querySelector("#chart"), {
+        colors: colorPalette,
+        series: series,
+        chart: {
+            toolbar: {
+                show: true,
+            },
+            width: "100%",
+            height: 350,
+            type: 'pie',
+        },
+        labels: labels,
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: "100%",
+                    height: 320
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    });
+    chart.render();
+
+    var chart1 = new ApexCharts(document.querySelector("#chart1"), {
+        colors: colorPalette,
+        series: [{
+            data: series
+        }],
+        chart: {
+            toolbar: {
+                show: true,
+            },
+            type: 'bar',
+            width: "100%",
+            height: 450
+        },
+        plotOptions: {
+            bar: {
+                distributed: true,
+            }
+        },
+        xaxis: {
+          categories: labels
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: "100%",
+                    height: 350
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    });
+    chart1.render();
+});
+</script>
+</body>
+</html>

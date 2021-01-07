@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "natural": "^2.4.0",
+    "nodeplotlib": "^0.6.5",
     "puppeteer": "^5.5.0"
   }
 }
