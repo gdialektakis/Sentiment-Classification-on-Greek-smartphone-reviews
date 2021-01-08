@@ -1,7 +1,8 @@
 import pandas as pd
 import spacy
 import time
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn import model_selection
 
 # spacy.cli.download("el_core_news_md")
 
@@ -28,8 +29,34 @@ def preprocess():
 
 
 # Need to split dataset in train & test
-def bag_of_words(pd):
+def bag_of_words(x_train, x_test):
     vectorizer = CountVectorizer()
-    X = vectorizer.fit_transform(pd['reviews'])
-    return X
+    X_train = vectorizer.fit_transform(x_train)
+    x_test = vectorizer.transform(x_test)
+    return X_train, x_test
 
+def tf_idf(x_train, x_test):
+    # convert th documents into a matrix
+    tfidfvectorizer = TfidfVectorizer()
+    X_train_tfidf = tfidfvectorizer.fit_transform(x_train)
+    X_test_tfidf = tfidfvectorizer.transform(x_test)
+    return X_train_tfidf, X_test_tfidf
+
+
+def sklearn_train_test(pd_df):
+    # split documents to train_set and test_set
+    X = pd_df['reviews']
+    y = pd_df['rating']
+    x_train, x_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0)
+    return x_train, x_test, y_train, y_test
+
+def crossValidation(pd_df):
+    cv = model_selection.LeaveOneOut()
+    X = pd_df['reviews']
+    y = pd_df['rating']
+
+    for train_ix, test_ix in cv.split(X):
+        x_train, x_test = X[train_ix, :], X[test_ix, :]
+        y_train, y_test = y[train_ix], y[test_ix]
+
+    return x_train, x_test, y_train, y_test
