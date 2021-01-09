@@ -1,14 +1,15 @@
 import pandas as pd
 import spacy
-import time
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn import model_selection
 from sklearn.utils import resample
+
 
 # spacy.cli.download("el_core_news_md")
 
 bow = CountVectorizer(ngram_range=(1, 2))
 tfidf = TfidfVectorizer(ngram_range=(1, 2))
+
 
 def preprocess():
     nlp = spacy.load("el_core_news_md")
@@ -40,6 +41,7 @@ def bag_of_words(x_train, x_test):
     X_train = bow.fit_transform(x_train)
     x_test = bow.transform(x_test)
     return X_train, x_test
+
 
 def tf_idf(x_train, x_test):
     # convert th documents into a matrix
@@ -83,5 +85,4 @@ def crossValidation(pd_df):
     for train_ix, test_ix in cv.split(X):
         x_train, x_test = X[train_ix, :], X[test_ix, :]
         y_train, y_test = y[train_ix], y[test_ix]
-
     return x_train, x_test, y_train, y_test
