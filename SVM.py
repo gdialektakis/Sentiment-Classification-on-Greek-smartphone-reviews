@@ -19,11 +19,8 @@ class Multi_SVM:
             self.model = SVC(kernel=kernel, gamma=gamma, C=C, decision_function_shape=decision_function_shape)
 
     def run(self, x_train, x_test, y_train, y_test):
-
-
         self.model.fit(x_train, y_train)
         y_predicted = self.model.predict(x_test)
-
 
         accuracy = metrics.accuracy_score(y_test, y_predicted)
         recall = metrics.recall_score(y_test, y_predicted, average="macro")

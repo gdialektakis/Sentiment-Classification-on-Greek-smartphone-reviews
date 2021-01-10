@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print("FINISH TF-IDF FOR Polynomial SVM")
 
     print("TF-IDF FOR Sigmoid SVM")
-    tfidf_sigmoid_svm = SVM.Multi_SVM("sigmoid", 2, 10, "ovo")
+    tfidf_sigmoid_svm = SVM.Multi_SVM("sigmoid", 2, 10, '', "ovo")
     tfidf_x_train, tfidf_x_test = tp.tf_idf(x_train, x_test)
     sigmoid_svm_results = tfidf_sigmoid_svm.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
     print("FINISH TF-IDF FOR Sigmoid SVM")
