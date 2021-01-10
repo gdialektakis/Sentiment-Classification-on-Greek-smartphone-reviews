@@ -2,14 +2,22 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from sklearn.linear_model import LogisticRegression
 
 
-def logistic_regression(X_train, X_test, y_train, y_test, vectorization):
-    model = LogisticRegression(multi_class='multinomial').fit(X_train, y_train)
+class MultinomialLogisticRegression:
 
-    y_pred = model.predict(X_test)
-    print("Multinomial Logistic Regression using %s" % vectorization)
-    print('Accuracy of Logistic Regression: %s' % accuracy_score(y_pred, y_test))
-    print('Precision of Logistic Regression: %s' % precision_score(y_pred, y_test))
-    print('Recall of Logistic Regression: %s' % recall_score(y_pred, y_test))
-    print('F1_score of Logistic Regression: %s' % f1_score(y_pred, y_test))
+    def __init__(self, solver, max_iterations):
+        self.data = []
+        self.model = LogisticRegression(multi_class='multinomial', solver=solver, max_iter=max_iterations)
 
-    return
+    def run(self, X_train, X_test, y_train, y_test):
+        # train the model
+        self.model.fit(X_train, y_train)
+        # predict on test data
+        y_predicted = self.model.predict(X_test)
+        print('Accuracy:  %3f' % accuracy_score(y_predicted, y_test))
+        print('Precision:  %3f' % precision_score(y_predicted, y_test, average="macro"))
+        print('Recall:  %3f' % recall_score(y_predicted, y_test, average="macro"))
+        print('F1_score:  %3f' % f1_score(y_predicted, y_test, average="macro"))
+        print("\n")
+
+    def pred(self, test):
+        return self.model.predict(test)
