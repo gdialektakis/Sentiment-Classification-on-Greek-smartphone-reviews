@@ -2,6 +2,7 @@ import text_preprocessing as tp
 import naive_bayes
 import multinomialRegression
 import SVM
+import Knn
 
 if __name__ == "__main__":
     print("Sentiment analysis on Greek Smartphone Reviews")
@@ -20,19 +21,32 @@ if __name__ == "__main__":
     tfidf_nb.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
 
 # -------------------------------------------------------------------------------------------------
-
+    print("Bag of Words")
+    bow_x_train, bow_x_test = tp.bag_of_words(X_train, X_test)
+    bow_nb = naive_bayes.NaiveBayes(0.1)
+    naive_bayes_results = bow_nb.run(bow_x_train, bow_x_test, y_train, y_test)
+    print("TF-IDF")
+    tfidf_nb = naive_bayes.NaiveBayes(0.1)
+    tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
+    naive_bayes_results = tfidf_nb.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
+# -------------------------------------------------------------------------------------------------
     print("TF-IDF FOR Polynomial SVM")
-    tfidf_poly_svm = SVM.Multi_SVM("poly", 6, 1, 5, "ovo")
+    tfidf_poly_svm = SVM.SVM_Classifier("poly", 6, 1, 5, "ovo")
+    tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
     poly_svm_results = tfidf_poly_svm.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
     print("FINISH TF-IDF FOR Polynomial SVM")
 
-    print("TF-IDF FOR Sigmoid SVM")
-    tfidf_sigmoid_svm = SVM.Multi_SVM("sigmoid", 2, 10, '', "ovo")
+    tfidf_sigmoid_svm = SVM.SVM_Classifier("sigmoid", 2, 10, "", "ovo")
+    tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
     sigmoid_svm_results = tfidf_sigmoid_svm.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
-    print("FINISH TF-IDF FOR Sigmoid SVM \n")
-
+    print("FINISH TF-IDF FOR Sigmoid SVM")
 # -------------------------------------------------------------------------------------------------
-
+    print("TF-IDF FOR KNN")
+    tfidf_knn = Knn.KNN_Classifier(5)
+    tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
+    knn_results = tfidf_knn.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
+    print("FINISH TF-IDF FOR KNN")
+# -------------------------------------------------------------------------------------------------
     print("Multinomial Logistic Regression using Bag of Words")
     bow_lr = multinomialRegression.MultinomialLogisticRegression(solver='saga', max_iterations=200)
     bow_lr.run(bow_x_train, bow_x_test, y_train, y_test)

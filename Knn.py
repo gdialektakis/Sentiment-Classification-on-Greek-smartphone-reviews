@@ -1,25 +1,16 @@
-from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
 from sklearn.metrics import confusion_matrix
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-class SVM_Classifier:
-    def __init__(self, kernel, gamma, C, degree, decision_function_shape):
+class KNN_Classifier:
+    def __init__(self, n_neighbors):
         self.data = []
-        self.kernel = kernel
-        self.gamma = gamma
-        self.C = C
-        self.degree = degree
-        self.decision_function_shape = decision_function_shape
-        if kernel == "poly":
-            self.model = SVC(kernel=kernel, gamma=gamma, C=C, degree=degree, decision_function_shape=decision_function_shape)
-        else:
-            self.model = SVC(kernel=kernel, gamma=gamma, C=C, decision_function_shape=decision_function_shape)
+        self.n_neighbors = n_neighbors
+        self.model = KNeighborsClassifier(n_neighbors)
 
     def run(self, x_train, x_test, y_train, y_test):
-
         self.model.fit(x_train, y_train)
         y_predicted = self.model.predict(x_test)
 
@@ -29,9 +20,7 @@ class SVM_Classifier:
         f1 = metrics.f1_score(y_test, y_predicted, average="micro")
         jaccard = metrics.jaccard_score(y_test, y_predicted, average="micro")
         classification_report = metrics.classification_report(y_test, y_predicted,
-                                                              target_names=['class 1', 'class 2', 'class 3', 'class 4',
-                                                                            'class 5'])
-
+                                                              target_names=['class 1', 'class 2', 'class 3', 'class 4', 'class 5'])
         fpr = {}
         tpr = {}
         thresh = {}
@@ -47,21 +36,22 @@ class SVM_Classifier:
         plt.plot(fpr[2], tpr[2], linestyle='--', color='blue', label='Class 3 vs Rest')
         plt.plot(fpr[3], tpr[3], linestyle='--', color='red', label='Class 4 vs Rest')
         plt.plot(fpr[4], tpr[4], linestyle='--', color='yellow', label='Class 5 vs Rest')
-        plt.title('Multiclass ' + str(self.kernel) + ' ROC curve')
+        plt.title('Multiclass ROC curve')
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive rate')
         plt.legend(loc='best')
-        plt.savefig('SVM' + str(self.kernel) + 'Multiclass ROC', dpi=300)
+        plt.savefig('KNN Multiclass ROC', dpi=300)
+
 
         print("==========================================================")
-        print(self.kernel)
-        print("SVM Accuracy: %2f" % accuracy)
-        print("SVM Precision: %2f" % precision)
-        print("SVM Recall: %2f" % recall)
-        print("SVM F1 Score: %2f" % f1)
-        print("SVM Jaccard_similarity_score: %2f" % jaccard)
-        print("SVM classification_report:")
+        print("KNN Accuracy: %2f" % accuracy)
+        print("KNN Precision: %2f" % precision)
+        print("KNN Recall: %2f" % recall)
+        print("KNN F1 Score: %2f" % f1)
+        print("KNN Jaccard_similarity_score: %2f" % jaccard)
+        print("KNN classification_report:")
         print(classification_report)
+
 
         cm = confusion_matrix(y_test, y_predicted, labels=[1, 2, 3, 4, 5])
         print(cm)
