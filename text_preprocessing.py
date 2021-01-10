@@ -46,15 +46,15 @@ def preprocess():
 # Need to split dataset in train & test
 def bag_of_words(x_train, x_test):
     X_train = bow.fit_transform(x_train)
-    x_test = bow.transform(x_test)
-    return X_train, x_test
+    X_test = bow.transform(x_test)
+    return X_train, X_test
 
 
 def tf_idf(x_train, x_test):
     # convert th documents into a matrix
-    X_train_tfidf = tfidf.fit_transform(x_train)
-    X_test_tfidf = tfidf.transform(x_test)
-    return X_train_tfidf, X_test_tfidf
+    X_train = tfidf.fit_transform(x_train)
+    X_test = tfidf.transform(x_test)
+    return X_train, X_test
 
 
 def sklearn_train_test(pd_df, sampling=None):
@@ -80,8 +80,8 @@ def sklearn_train_test(pd_df, sampling=None):
 
     X = df['reviews']
     y = df['rating']
-    x_train, x_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0, stratify=y, test_size=0.1)
-    return x_train, x_test, y_train, y_test
+    X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0, stratify=y, test_size=0.1)
+    return X_train, X_test, y_train, y_test
 
 
 def crossValidation(pd_df):
@@ -90,6 +90,6 @@ def crossValidation(pd_df):
     y = pd_df['rating']
 
     for train_ix, test_ix in cv.split(X):
-        x_train, x_test = X[train_ix, :], X[test_ix, :]
+        X_train, X_test = X[train_ix, :], X[test_ix, :]
         y_train, y_test = y[train_ix], y[test_ix]
-    return x_train, x_test, y_train, y_test
+    return X_train, X_test, y_train, y_test
