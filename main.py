@@ -20,7 +20,7 @@ if __name__ == "__main__":
     tfidf_nb.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
 
 # -------------------------------------------------------------------------------------------------
-    """
+
     print("TF-IDF FOR Polynomial SVM")
     tfidf_poly_svm = SVM.Multi_SVM("poly", 6, 1, 5, "ovo")
     poly_svm_results = tfidf_poly_svm.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     print("FINISH TF-IDF FOR Sigmoid SVM \n")
 
 # -------------------------------------------------------------------------------------------------
-    """
+
     print("Multinomial Logistic Regression using Bag of Words")
     bow_lr = multinomialRegression.MultinomialLogisticRegression(solver='saga', max_iterations=200)
     bow_lr.run(bow_x_train, bow_x_test, y_train, y_test)
