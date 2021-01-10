@@ -3,6 +3,7 @@ import spacy
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn import model_selection
 from sklearn.utils import resample
+import os.path
 
 
 # spacy.cli.download("el_core_news_md")
@@ -12,27 +13,33 @@ tfidf = TfidfVectorizer(ngram_range=(1, 2))
 
 
 def preprocess():
-    nlp = spacy.load("el_core_news_md")
-    reviews = pd.read_json('./autoscraper/all_reviews.json', encoding='utf8')
+    if not os.path.isfile('./preprocessed_data.csv'):
+        nlp = spacy.load("el_core_news_md")
+        reviews = pd.read_json('./autoscraper/all_reviews.json', encoding='utf8')
 
-    reviews_df = reviews.drop(columns=['phone', 'cons', 'neutral', 'pros'])
-    rating = reviews_df['rating']
-    replacements = [("κινιτο", "κινητό"), ("\n", " "), (".", " "), ("(", " "), (")", " "), (",", " ")]
-    for (prev, curr) in replacements:
-        reviews_df['review'] = reviews_df['review'].str.replace(prev, curr)
+        reviews_df = reviews.drop(columns=['phone', 'cons', 'neutral', 'pros'])
+        rating = reviews_df['rating']
+        replacements = [("κινιτο", "κινητό"), ("\n", " "), (".", " "), ("(", " "), (")", " "), (",", " ")]
+        for (prev, curr) in replacements:
+            reviews_df['review'] = reviews_df['review'].str.replace(prev, curr)
 
-    reviews_df['review'] = reviews_df['review'].str.replace("\\d", "")
-    corpus = []
-    for review in reviews_df['review']:
-        doc = nlp(review)
-        # Tokenize & Remove stop words & punctuation & Lemmatization
-        lemmas = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and len(token.text.strip()) > 0]
-        corpus.append(" ".join(lemmas))
-    new_df = pd.DataFrame(list(zip(corpus, rating)), columns=['reviews', 'rating'])
-    #Remove accents after lemmatization
-    replacements = [ ("ά", "α"), ("έ", "ε"), ("ή", "η"), ("ί", "ι"), ("ύ", "υ"), ("ό", "ο"), ("ώ", "ω")]
-    for (prev, curr) in replacements:
-        new_df['reviews'] = new_df['reviews'].str.replace(prev, curr)
+        reviews_df['review'] = reviews_df['review'].str.replace("\\d", "")
+        corpus = []
+        for review in reviews_df['review']:
+            doc = nlp(review)
+            # Tokenize & Remove stop words & punctuation & Lemmatization
+            lemmas = [token.lemma_ for token in doc if
+                      not token.is_stop and not token.is_punct and len(token.text.strip()) > 0]
+            corpus.append(" ".join(lemmas))
+        new_df = pd.DataFrame(list(zip(corpus, rating)), columns=['reviews', 'rating'])
+        # Remove accents after lemmatization
+        replacements = [("ά", "α"), ("έ", "ε"), ("ή", "η"), ("ί", "ι"), ("ύ", "υ"), ("ό", "ο"), ("ώ", "ω")]
+        for (prev, curr) in replacements:
+            new_df['reviews'] = new_df['reviews'].str.replace(prev, curr)
+        new_df.to_csv("./preprocessed_data.csv", index=False)
+    else:
+        new_df = pd.read_csv("./preprocessed_data.csv")
+        print(new_df)
     return new_df
 
 
