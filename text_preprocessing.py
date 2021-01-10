@@ -60,28 +60,37 @@ def tf_idf(x_train, x_test):
 def sklearn_train_test(pd_df, sampling=None):
     df = pd_df
     # split documents to train_set and test_set
-    if sampling == 'downsample':
-        diff_ratings = [5, 4, 3, 2, 1]
+    if sampling == 'undersample':
+        diff_ratings = [5, 4, 3, 2]
         dfs = []
+        max_samples = len(pd_df[pd_df.rating == 1].values)
         for dr in diff_ratings:
             curr_df = pd_df[pd_df.rating == dr]
-            dfs.append(resample(curr_df, replace=False, n_samples=176, random_state=0))
+            dfs.append(resample(curr_df, replace=False, n_samples=max_samples, random_state=0))
 
-        df = pd.concat(dfs)
-
-    if sampling == 'oversample':
-        diff_ratings = [5, 4, 3, 2, 1]
-        dfs = []
-        for dr in diff_ratings:
-            curr_df = pd_df[pd_df.rating == dr]
-            dfs.append(resample(curr_df, replace=True, n_samples=5167, random_state=0))
-
+        dfs.append(pd_df[pd_df.rating == 1])
         df = pd.concat(dfs)
 
     X = df['reviews']
     y = df['rating']
-    X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0, stratify=y, test_size=0.1)
-    return X_train, X_test, y_train, y_test
+    x_train, x_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0, stratify=y, test_size=0.33)
+
+    # Over-sample only on the train data
+    new_df = pd.DataFrame(list(zip(x_train, y_train)), columns=['reviews', 'rating'])
+    if sampling == 'oversample':
+        diff_ratings = [4, 3, 2, 1]
+        dfs = []
+        max_samples = len(new_df[new_df.rating == 5].values)
+        for dr in diff_ratings:
+            curr_df = new_df[new_df.rating == dr]
+            dfs.append(resample(curr_df, replace=True, n_samples=max_samples, random_state=0))
+
+        dfs.append(new_df[new_df.rating == 5])
+        df = pd.concat(dfs)
+        x_train = df['reviews']
+        y_train = df['rating']
+
+    return x_train, x_test, y_train, y_test
 
 
 def crossValidation(pd_df):
