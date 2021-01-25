@@ -4,7 +4,11 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn import model_selection
 from sklearn.utils import resample
 import os.path
+import pickle
+import numpy as np
 
+from tensorflow.python.keras.preprocessing.text import Tokenizer
+from keras.preprocessing import sequence
 
 # spacy.cli.download("el_core_news_md")
 
@@ -102,3 +106,27 @@ def crossValidation(pd_df):
         X_train, X_test = X[train_ix, :], X[test_ix, :]
         y_train, y_test = y[train_ix], y[test_ix]
     return X_train, X_test, y_train, y_test
+
+
+def lstm_preprocess(df, use_embeddings=False, max_features=2000):
+    tokenizer = Tokenizer(num_words=max_features, split=' ')
+    tokenizer.fit_on_texts(df['reviews'].values)
+    vocab_size = len(tokenizer.word_index) + 1
+    X = tokenizer.texts_to_sequences(df['reviews'].values)
+    X = sequence.pad_sequences(X)
+    embedding_matrix = []
+    if use_embeddings:
+        # create a weight matrix for words in training docs
+        embedding_matrix = np.zeros((vocab_size, 300))
+        nlp = spacy.load('el_core_news_md')
+        if not os.path.isfile('./embedding_matrix.pickle'):
+            for word, i in tokenizer.word_index.items():
+                tok = nlp(word)
+                if tok.has_vector:
+                    embedding_vector = tok.vector
+                if embedding_vector is not None:
+                    embedding_matrix[i] = embedding_vector
+            pickle.dump(embedding_matrix, open("embedding_matrix.pickle", "wb"))
+        else:
+            embedding_matrix = pickle.load(open("embedding_matrix.pickle", "rb"))
+    return X, embedding_matrix

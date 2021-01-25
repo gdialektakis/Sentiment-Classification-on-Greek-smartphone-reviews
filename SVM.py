@@ -27,6 +27,7 @@ class SVM_Classifier:
         recall = metrics.recall_score(y_test, y_predicted, average="micro")
         precision = metrics.precision_score(y_test, y_predicted, average="micro")
         f1 = metrics.f1_score(y_test, y_predicted, average="micro")
+
         jaccard = metrics.jaccard_score(y_test, y_predicted, average="micro")
         classification_report = metrics.classification_report(y_test, y_predicted,
                                                               target_names=['class 1', 'class 2', 'class 3', 'class 4',

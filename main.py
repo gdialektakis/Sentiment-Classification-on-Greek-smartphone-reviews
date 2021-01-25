@@ -3,13 +3,20 @@ import naive_bayes
 import multinomialRegression
 import SVM
 import Knn
+import lstm
 
 if __name__ == "__main__":
     print("Sentiment analysis on Greek Smartphone Reviews")
     df = tp.preprocess()
-    print(df)
 
     X_train, X_test, y_train, y_test = tp.sklearn_train_test(df, sampling="oversample")
+    max_features = 2000
+    use_embeddings = True
+    is_bidirectional = False
+    X, embedding_matrix = tp.lstm_preprocess(df, use_embeddings=use_embeddings, max_features=max_features)
+    lstm_model = lstm.LSTMNET(embedding_matrix, use_embeddings=use_embeddings, is_bidirectional=is_bidirectional, max_features=max_features)
+    lstm_model.run(df, X)
+
     tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
     bow_x_train, bow_x_test = tp.bag_of_words(X_train, X_test)
 
@@ -31,13 +38,14 @@ if __name__ == "__main__":
     naive_bayes_results = tfidf_nb.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
 # -------------------------------------------------------------------------------------------------
     print("TF-IDF FOR Polynomial SVM")
-    tfidf_poly_svm = SVM.SVM_Classifier("poly", 6, 1, 5, "ovo")
-    tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
+
+    tfidf_poly_svm = SVM.Multi_SVM("poly", 6, 1, 5, "ovr")
     poly_svm_results = tfidf_poly_svm.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
     print("FINISH TF-IDF FOR Polynomial SVM")
 
-    tfidf_sigmoid_svm = SVM.SVM_Classifier("sigmoid", 2, 10, "", "ovo")
-    tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
+    print("TF-IDF FOR Sigmoid SVM")
+    tfidf_sigmoid_svm = SVM.Multi_SVM("sigmoid", 2, 10, '', "ovr")
+
     sigmoid_svm_results = tfidf_sigmoid_svm.run(tfidf_x_train, tfidf_x_test, y_train, y_test)
     print("FINISH TF-IDF FOR Sigmoid SVM")
 # -------------------------------------------------------------------------------------------------

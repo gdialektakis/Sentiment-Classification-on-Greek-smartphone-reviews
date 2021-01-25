@@ -16,9 +16,9 @@ class MultinomialLogisticRegression:
         # predict on test data
         y_predicted = self.model.predict(X_test)
         print('Accuracy:  %3f' % accuracy_score(y_predicted, y_test))
-        print('Precision:  %3f' % precision_score(y_predicted, y_test, average="macro"))
-        print('Recall:  %3f' % recall_score(y_predicted, y_test, average="macro"))
-        print('F1_score:  %3f' % f1_score(y_predicted, y_test, average="macro"))
+        print('Precision:  %3f' % precision_score(y_predicted, y_test, average="micro"))
+        print('Recall:  %3f' % recall_score(y_predicted, y_test, average="micro"))
+        print('F1_score:  %3f' % f1_score(y_predicted, y_test, average="micro"))
         print("\n")
 
     def feature_importance(self, X_train, X_test, bow):

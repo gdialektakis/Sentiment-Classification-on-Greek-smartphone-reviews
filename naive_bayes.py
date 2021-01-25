@@ -17,9 +17,9 @@ class NaiveBayes:
         y_predicted = self.model.predict(x_test)
 
         accuracy = metrics.accuracy_score(y_test, y_predicted)
-        precision = metrics.precision_score(y_test, y_predicted, average="macro")
-        recall = metrics.recall_score(y_test, y_predicted, average="macro")
-        f1 = metrics.f1_score(y_test, y_predicted, average="macro")
+        precision = metrics.precision_score(y_test, y_predicted, average="micro")
+        recall = metrics.recall_score(y_test, y_predicted, average="micro")
+        f1 = metrics.f1_score(y_test, y_predicted, average="micro")
         print('Accuracy: %2f' % accuracy)
         print('Precision: %2f' % precision)
         print('Recall: %2f' % recall)
