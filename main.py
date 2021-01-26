@@ -13,9 +13,12 @@ if __name__ == "__main__":
     max_features = 2000
     use_embeddings = True
     is_bidirectional = False
+    class_weights = False
     X, embedding_matrix = tp.lstm_preprocess(df, use_embeddings=use_embeddings, max_features=max_features)
-    lstm_model = lstm.LSTMNET(embedding_matrix, use_embeddings=use_embeddings, is_bidirectional=is_bidirectional, max_features=max_features)
+    lstm_model = lstm.LSTMNetwork(embedding_matrix, use_embeddings=use_embeddings,
+                                  is_bidirectional=is_bidirectional, max_features=max_features, use_class_weights=class_weights)
     lstm_model.run(df, X)
+
 
     tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
     bow_x_train, bow_x_test = tp.bag_of_words(X_train, X_test)
