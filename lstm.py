@@ -48,7 +48,6 @@ class LSTMNetwork:
         Y = df['rating'].values
         Y = np.array([int(v) - 1 for v in Y])
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, stratify=Y, test_size=0.1)
-
         if self.use_class_weights:
             class_weights = compute_class_weight('balanced', np.unique(Y_train), Y_train)
         else:
@@ -101,6 +100,6 @@ class LSTMNetwork:
 
         print('Train accuracy: %.4f' % accuracy_score(Y_train, y_predicted_train))
         print('Test accuracy: %.4f' % accuracy_score(Y_test, y_predicted_test))
-        print('Test Precision: %.4f' % precision_score(Y_test, y_predicted_test, average="micro"))
-        print('Test Recall: %.4f' % recall_score(Y_test, y_predicted_test, average="micro"))
-        print('Test F1: %.4f' % f1_score(Y_test, y_predicted_test, average="micro"))
+        print('Test Precision: %.4f' % precision_score(Y_test, y_predicted_test, average="weighted"))
+        print('Test Recall: %.4f' % recall_score(Y_test, y_predicted_test, average="weighted"))
+        print('Test F1: %.4f' % f1_score(Y_test, y_predicted_test, average="weighted"))
