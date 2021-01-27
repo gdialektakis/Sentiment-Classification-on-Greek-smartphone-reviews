@@ -11,14 +11,21 @@ if __name__ == "__main__":
 
     X_train, X_test, y_train, y_test = tp.sklearn_train_test(df, sampling="oversample")
     max_features = 2000
-    use_embeddings = True
-    is_bidirectional = False
+    use_embeddings = False
     class_weights = False
+
+    print("\n------------------LSTM model using word embeddings------------------\n")
     X, embedding_matrix = tp.lstm_preprocess(df, use_embeddings=use_embeddings, max_features=max_features)
     lstm_model = lstm.LSTMNetwork(embedding_matrix, use_embeddings=use_embeddings,
-                                  is_bidirectional=is_bidirectional, max_features=max_features, use_class_weights=class_weights)
+                                  is_bidirectional=False, max_features=max_features,
+                                  use_class_weights=class_weights)
     lstm_model.run(df, X)
 
+    print("\n------------------Bidirectional LSTM model using word embeddings------------------\n")
+    bi_lstm_model = lstm.LSTMNetwork(embedding_matrix, use_embeddings=use_embeddings,
+                                     is_bidirectional=True, max_features=max_features,
+                                     use_class_weights=class_weights, type='Bidirectional LSTM')
+    bi_lstm_model.run(df, X)
 
     tfidf_x_train, tfidf_x_test = tp.tf_idf(X_train, X_test)
     bow_x_train, bow_x_test = tp.bag_of_words(X_train, X_test)
@@ -82,4 +89,3 @@ if __name__ == "__main__":
     print(test_tfidf_transformed)
     print(tfidf_nb.pred(test_tfidf_transformed))
     print("====================================")
-

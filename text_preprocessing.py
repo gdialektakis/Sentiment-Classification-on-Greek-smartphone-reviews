@@ -77,7 +77,7 @@ def sklearn_train_test(pd_df, sampling=None):
 
     X = df['reviews']
     y = df['rating']
-    x_train, x_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0, stratify=y, test_size=0.33)
+    x_train, x_test, y_train, y_test = model_selection.train_test_split(X, y, random_state=0, stratify=y, test_size=0.2)
 
     # Over-sample only on the train data
     new_df = pd.DataFrame(list(zip(x_train, y_train)), columns=['reviews', 'rating'])
@@ -93,7 +93,6 @@ def sklearn_train_test(pd_df, sampling=None):
         df = pd.concat(dfs)
         x_train = df['reviews']
         y_train = df['rating']
-
     return x_train, x_test, y_train, y_test
 
 
