@@ -8,4 +8,6 @@ Machine Learning techniques used:
 - Naive Bayes
 - Multinomial Logistic Regression
 - Support Vector Machines
-- Multilayer Perceptron
+- K-Nearest Neighbors
+- Long short-term memory (LSTM)
+- Bidirectional Long short-term memory (BiLSTM)
