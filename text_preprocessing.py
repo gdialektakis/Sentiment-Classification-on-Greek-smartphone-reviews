@@ -10,7 +10,7 @@ import numpy as np
 from tensorflow.python.keras.preprocessing.text import Tokenizer
 from keras.preprocessing import sequence
 
-# spacy.cli.download("el_core_news_md")
+spacy.cli.download("el_core_news_md")
 
 bow = CountVectorizer(ngram_range=(1, 2))
 tfidf = TfidfVectorizer(ngram_range=(1, 2))
